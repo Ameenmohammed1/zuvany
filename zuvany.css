@@ -19,11 +19,12 @@
 .botContiner .botTop {
     width: 100%;
     height: 12vh;
-    background: #ffffff;
+    background: #f0f0f0;
     display: flex;
     align-items: center;
     padding-left: 20px;
-    border-bottom: #ececec solid 2px;
+    border-bottom: #f8f8f8 solid 2px;
+    cursor: pointer;
 }
 
 .botTop .title {

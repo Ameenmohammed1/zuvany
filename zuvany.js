@@ -11,8 +11,8 @@ function runZuvany(API){
                     <p class="Welcome">Welcome To Alex AI</p>
                     <p class="About">How can I assist you today?</p>
                     <div class="questionDiv">
-                        <div class="question">What is Appoim?</div>
-                        <div class="question">How to Create Profile?</div>
+                        <div class="question" id="qone" >What is Appoim?</div>
+                        <div class="question" id="qtwo" >How to Create Profile?</div>
                     </div>
                 </div>
                 <div class="responseDiv" id="responseDiv">
@@ -89,7 +89,7 @@ function runZuvany(API){
             padding: 5px;
         }
         .welcomeDiv .Welcome {
-            font-size: 1.5rem;
+            font-size: 1.7rem;
         }
         .welcomeDiv .About {
             font-size: 1rem;
@@ -106,8 +106,15 @@ function runZuvany(API){
             padding: 5px 10px;
             border-radius: 10px;
             border: #ececec solid 2px;
+            cursor: pointer;
         }
         .responseDiv .response {
+            padding: 10px 10px;
+            border-radius: 5px;
+            background-color: #ececec;
+            margin-bottom: 10px;
+        }
+        .responseDiv .loading {
             padding: 10px 10px;
             border-radius: 5px;
             background-color: #ececec;
@@ -203,18 +210,66 @@ function runZuvany(API){
     
     const responseDiv = document.getElementById("responseDiv");
     const welcomeDiv = document.getElementById("welcomeDiv");
+    const qone = document.getElementById("qone");
+    const qtwo = document.getElementById("qtwo");
+    qone.addEventListener("click",()=>{
+        defultQuestion(qone.textContent);
+    })
+    qtwo.addEventListener("click",()=>{
+        defultQuestion(qtwo.textContent);
+    })
+
+    function defultQuestion(question) {
+        
+        if (!API) {
+            alert("Add Your API Key");
+            return;
+        }
+    
+        
+        if (!question) {
+            alert("Please enter a question.");
+            return;
+        }
+    
+        displayMessage(question, "user");
+        Loading(true);  // Show loading indicator
+    
+        fetch("https://example.com/api/ask", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question: question })
+        })
+        .then(response => response.json())
+        .then(data => {
+            Loading(false);  // Hide loading indicator
+            displayMessage(data.answer, "bot");
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            setTimeout(() => {
+                displayMessage("There was an error processing your request. " + API, "bot");
+                Loading(false);  // Ensure loading indicator is hidden on error
+            }, 1000);
+        });
+    
+       
+    }
     
     function sendMessage() {
-        if(!API){
-            alert("Add Your API Key")
-            return
+        if (!API) {
+            alert("Add Your API Key");
+            return;
         }
+    
         const userInput = document.getElementById("userInput").value;
         if (userInput.trim() === "") {
             alert("Please enter a question.");
             return;
         }
+    
         displayMessage(userInput, "user");
+        Loading(true);  // Show loading indicator
     
         fetch("https://example.com/api/ask", {
             method: "POST",
@@ -222,10 +277,16 @@ function runZuvany(API){
             body: JSON.stringify({ question: userInput })
         })
         .then(response => response.json())
-        .then(data => displayMessage(data.answer, "bot"))
+        .then(data => {
+            Loading(false);  // Hide loading indicator
+            displayMessage(data.answer, "bot");
+        })
         .catch(error => {
             console.error("Error:", error);
-            displayMessage("There was an error processing your request."+API, "bot");
+            setTimeout(() => {
+                displayMessage("There was an error processing your request. " + API, "bot");
+                Loading(false);  // Ensure loading indicator is hidden on error
+            }, 1000);
         });
     
         document.getElementById("userInput").value = "";
@@ -235,7 +296,7 @@ function runZuvany(API){
         const messageElement = document.createElement("div");
         messageElement.classList.add("response");
     
-        messageElement.style.backgroundColor = sender === "user" ? "#d4f0ff" : "#ececec";
+        messageElement.style.backgroundColor = sender === "user" ? "#f6f5f5" : "#f0f0f0";
         messageElement.textContent = message;
     
         responseDiv.appendChild(messageElement);
@@ -243,5 +304,23 @@ function runZuvany(API){
         responseDiv.scrollTop = responseDiv.scrollHeight;
     }
     
+    function Loading(status) {
+        if (status) {
+            const loadingDiv = document.createElement("div");
+            loadingDiv.classList.add("loading");
+            loadingDiv.style.backgroundColor = "#f8f8f8";
+            loadingDiv.textContent = "Please Wait...";
+            responseDiv.appendChild(loadingDiv);
+            responseDiv.scrollTop = responseDiv.scrollHeight;
+        } else {
+            const loadingDiv = document.querySelector(".loading");
+            if (loadingDiv) {
+                loadingDiv.remove();  // Remove loading div from DOM
+            }
+        }
+    }
+    
+    
 }
 
+runZuvany("Ameen Moahmemd")
