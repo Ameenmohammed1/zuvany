@@ -323,4 +323,4 @@ function runZuvany(API){
     
 }
 
-runZuvany("Ameen Moahmemd")
+// runZuvany("Ameen Moahmemd")
